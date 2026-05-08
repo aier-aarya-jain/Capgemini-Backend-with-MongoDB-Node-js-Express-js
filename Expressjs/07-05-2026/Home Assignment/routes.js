@@ -1,4 +1,5 @@
 const express = require("express");
+
 const router = express.Router();
 
 const User = require("./models/users");
@@ -8,72 +9,63 @@ router.get("/users", async (req, res) => {
 
   const users = await User.find();
 
-  res.json(users);
+  res.send(users);
 });
-
-router.get("/users/:id", async (req, res) => {
-
-  const user = await User.findById(req.params.id);
-
-  res.json(user);
-});
-
-
 
 router.post("/users", async (req, res) => {
 
-  try {
+  const users = await User.insertMany(req.body);
 
-    const users = await User.insertMany(req.body);
-
-    res.status(201).json(users);
-
-  } catch (error) {
-
-    res.status(500).json({
-      message: error.message
-    });
-
-  }
-
+  res.send(users);
 });
-
 
 router.patch("/users/:id", async (req, res) => {
 
-  const updatedUser = await User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.params.id,
     req.body,
     { new: true }
   );
 
-  res.json(updatedUser);
+  res.send(user);
 });
 
 router.put("/users/:id", async (req, res) => {
 
-  const updatedUser = await User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.params.id,
-    {
-      name: req.body.name,
-      age: req.body.age
-    },
-    {
-      new: true
-    }
+    req.body,
+    { new: true }
   );
 
-  res.json(updatedUser);
+  res.send(user);
 });
 
 
+// DELETE user
 router.delete("/users/:id", async (req, res) => {
 
   await User.findByIdAndDelete(req.params.id);
 
-  res.json({
-    message: "User deleted"
-  });
+  res.send("User deleted");
+});
+
+
+// fallback middleware
+router.use((req, res) => {
+
+  if (
+    req.method !== "GET" &&
+    req.method !== "POST" &&
+    req.method !== "PUT" &&
+    req.method !== "PATCH" &&
+    req.method !== "DELETE"
+  ) {
+
+    return res.send("405 Method Not Allowed");
+  }
+
+  res.send("404 Page Not Found");
 });
 
 module.exports = router;
