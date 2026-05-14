@@ -1,0 +1,11 @@
+{
+  "name": "socket-chat",
+  "version": "1.0.0",
+  "description": "Socket Chat Monorepo",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm start --prefix server\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
